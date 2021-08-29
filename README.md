@@ -1,6 +1,6 @@
 # Live Camera plugin for Mini Tokyo 3D
 
-Live Camera plugin shows the Olympic competition venues and the event schedule in the [Mini Tokyo 3D](https://minitokyo3d.com) map.
+Live Camera plugin displays live cameras along the railroad tracks in the [Mini Tokyo 3D](https://minitokyo3d.com) map, and delivers streaming video.
 
 ![Screenshot](https://nagix.github.io/mt3d-plugin-livecam/screenshot1.jpg)
 
@@ -26,13 +26,6 @@ Then, create a MiniTokyo3D instance specifying the `plugins` property, which is 
     });
 </script>
 ```
-
-## About Data
-
-The 3D model of the Olympic Stadium used in this plugin is sourced from [ARCHITECTURE GRAVURE](https://christinayan01.jp/architecture/archives/14112#).
-
-_Copyright (c) 2021 christinayan by Takahiro Yanai<br>Released under the MIT license_
-
 
 ## How to Build
 
