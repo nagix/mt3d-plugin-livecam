@@ -1,0 +1,52 @@
+{
+  "name": "mt3d-plugin-livecam",
+  "version": "0.1.0-SNAPSHOT",
+  "description": "Live Camera plugin for Mini Tokyo 3D",
+  "main": "dist/mt3d-plugin-livecam.js",
+  "module": "dist/mt3d-plugin-livecam.esm.js",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.4"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^20.0.0",
+    "@rollup/plugin-image": "^2.1.1",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.0.4",
+    "@rollup/plugin-replace": "^3.0.0",
+    "@rollup/plugin-strip": "^2.1.0",
+    "eslint": "^7.32.0",
+    "eslint-config-mourner": "^3.0.0",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-jsdoc": "^36.0.8",
+    "mini-tokyo-3d": "^3.0.0-beta.1",
+    "postcss": "^8.3.6",
+    "postcss-inline-svg": "^5.0.0",
+    "rollup": "^2.56.3",
+    "rollup-plugin-postcss": "^4.0.0",
+    "rollup-plugin-terser": "^7.0.2"
+  },
+  "peerDependencies": {
+    "mini-tokyo-3d": "^3.0.0-beta.1"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "lint": "eslint --cache --ignore-path .gitignore src"
+  },
+  "files": [
+    "build/",
+    "dist/mt3d-plugin-livecam.*",
+    "src/"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nagix/mt3d-plugin-livecam.git"
+  },
+  "author": "Akihiko Kusanagi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nagix/mt3d-plugin-livecam/issues"
+  },
+  "homepage": "https://minitokyo3d.com",
+  "jsdelivr": "dist/mt3d-plugin-livecam.min.js",
+  "unpkg": "dist/mt3d-plugin-livecam.min.js"
+}
