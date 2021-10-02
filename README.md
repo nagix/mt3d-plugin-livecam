@@ -11,8 +11,9 @@ Live Camera plugin is used in [Mini Tokyo 3D Live Demo](https://minitokyo3d.com)
 First, load the Mini Tokyo 3D and this plugin within the `<head>` element of the HTML file.
 
 ```html
-<script src="path/to/mini-tokyo-3d/dist/mini-tokyo-3d.min.js"></script>
-<script src="path/to/mt3d-plugin-livecam/dist/mt3d-plugin-livecam.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mini-tokyo-3d@next/dist/mini-tokyo-3d.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/mini-tokyo-3d@next/dist/mini-tokyo-3d.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mt3d-plugin-livecam@latest/dist/mt3d-plugin-livecam.min.js"></script>
 ```
 
 Then, create a MiniTokyo3D instance specifying the `plugins` property, which is the array containing the plugin instance returned by `mt3dLivecam()`.

@@ -1,9 +1,14 @@
 import {Marker, Panel, Popup, Plugin} from 'mini-tokyo-3d';
-import livecamSVG from '../node_modules/@fortawesome/fontawesome-free/svgs/solid/video.svg';
+import livecamSVG from '@fortawesome/fontawesome-free/svgs/solid/video.svg';
 import './livecam.css';
 
 // Live camera URL
 const LIVECAM_URL = 'https://mini-tokyo.appspot.com/livecam';
+
+function addColor(url, color) {
+    const encodedColor = color.replace('#', '%23');
+    return url.replace('%3e', ` fill=\'${encodedColor}\' stroke=\'${encodedColor}\'%3e`);
+}
 
 function createElement(tagName, attributes, container) {
     const element = document.createElement(tagName);
@@ -54,7 +59,7 @@ class LivecamPlugin extends Plugin {
         };
         me.iconStyle = {
             backgroundSize: '32px',
-            backgroundImage: `url("${livecamSVG.replace('%3e', ' fill=\'white\'%3e')}")`
+            backgroundImage: `url("${addColor(livecamSVG, 'white')}")`
         };
         me.cameras = {};
         me.markers = {};
