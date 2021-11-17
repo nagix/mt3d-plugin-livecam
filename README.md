@@ -30,7 +30,7 @@ Then, create a MiniTokyo3D instance specifying the `plugins` property, which is 
 
 ## How to Build
 
-The latest version of Node.js is required. Move to the root directory of the plugin, run the following commands, then the plugin scripts will be generated in the `build` directory.
+The latest version of Node.js is required. Move to the root directory of the plugin, run the following commands, then the plugin scripts will be generated in the `dist` directory.
 ```bash
 npm install
 npm run build
