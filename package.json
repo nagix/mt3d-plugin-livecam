@@ -18,7 +18,7 @@
     "eslint-config-mourner": "^3.0.0",
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-jsdoc": "^36.1.0",
-    "mini-tokyo-3d": "^3.0.0-beta.2",
+    "mini-tokyo-3d": "^3.0.0-rc.1",
     "postcss": "^8.3.8",
     "postcss-inline-svg": "^5.0.0",
     "rollup": "^2.58.0",
@@ -26,7 +26,7 @@
     "rollup-plugin-terser": "^7.0.2"
   },
   "peerDependencies": {
-    "mini-tokyo-3d": "^3.0.0-beta.2"
+    "mini-tokyo-3d": "^3.0.0-rc.1"
   },
   "scripts": {
     "build": "rollup -c",

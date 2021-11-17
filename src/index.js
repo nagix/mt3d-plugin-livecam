@@ -1,4 +1,4 @@
-import {Marker, Panel, Popup, Plugin} from 'mini-tokyo-3d';
+import {Marker, Panel, Popup} from 'mini-tokyo-3d';
 import livecamSVG from '@fortawesome/fontawesome-free/svgs/solid/video.svg';
 import './livecam.css';
 
@@ -37,14 +37,9 @@ class LivecamPanel extends Panel {
 
 }
 
-class LivecamPlugin extends Plugin {
+class LivecamPlugin {
 
-    constructor(options) {
-        super(Object.assign({
-            clockModes: ['realtime'],
-            viewModes: ['ground']
-        }, options));
-
+    constructor() {
         const me = this;
 
         me.id = 'livecam';
@@ -61,16 +56,21 @@ class LivecamPlugin extends Plugin {
             backgroundSize: '32px',
             backgroundImage: `url("${addColor(livecamSVG, 'white')}")`
         };
+        me.clockModes = ['realtime'];
+        me.viewModes = ['ground'];
         me.cameras = {};
         me.markers = {};
         me._onSelection = me._onSelection.bind(me);
         me._onDeselection = me._onDeselection.bind(me);
     }
 
+    onAdd(map) {
+        this.map = map;
+    }
+
     onEnabled() {
         const me = this,
-            map = me._map,
-            cameras = me.cameras;
+            {map, cameras} = me;
 
         map.on('selection', me._onSelection);
         map.on('deselection', me._onDeselection);
@@ -80,19 +80,18 @@ class LivecamPlugin extends Plugin {
                 cameras[item.id] = item;
             }
             me._addMarkers();
-            me.setVisibility(true);
         });
     }
 
     onDisabled() {
         const me = this,
-            map = me._map;
+            {map} = me;
 
         map.off('selection', me._onSelection);
         map.off('deselection', me._onDeselection);
 
         if (me.panel) {
-            me._map.trackObject();
+            map.trackObject();
             me.panel.remove();
             delete me.panel;
         }
@@ -109,8 +108,10 @@ class LivecamPlugin extends Plugin {
     onVisibilityChanged(visible) {
         const me = this;
 
+        me.visible = visible;
+
         if (!visible && me.panel) {
-            me._map.trackObject();
+            me.map.trackObject();
         }
         for (const id of Object.keys(me.markers)) {
             me.markers[id].setVisibility(visible);
@@ -119,7 +120,7 @@ class LivecamPlugin extends Plugin {
 
     _addMarkers() {
         const me = this,
-            map = me._map,
+            {map, visible} = me,
             {lang} = map;
 
         for (const id of Object.keys(me.cameras)) {
@@ -131,9 +132,10 @@ class LivecamPlugin extends Plugin {
             me.markers[id] = new Marker({element})
                 .setLngLat(center)
                 .addTo(map)
+                .setVisibility(visible)
                 .on('click', () => {
                     map.trackObject(selection);
-                    map.map.flyTo({center, zoom, bearing, pitch});
+                    map.getMapboxMap().flyTo({center, zoom, bearing, pitch});
                 })
                 .on('mouseenter', () => {
                     popup = new Popup()
@@ -162,7 +164,7 @@ class LivecamPlugin extends Plugin {
                 {id} = event;
 
             me.markers[id].setActivity(true);
-            me.panel = new LivecamPanel({camera: me.cameras[id]}).addTo(me._map);
+            me.panel = new LivecamPanel({camera: me.cameras[id]}).addTo(me.map);
         }
     }
 
@@ -183,6 +185,6 @@ class LivecamPlugin extends Plugin {
 
 }
 
-export default function(options) {
-    return new LivecamPlugin(options);
+export default function() {
+    return new LivecamPlugin();
 }
