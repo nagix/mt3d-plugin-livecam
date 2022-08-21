@@ -48,6 +48,7 @@ class LivecamPlugin {
             ja: 'ライブカメラ',
             ko: '실시간 웹캠',
             ne: 'प्रत्यक्ष क्यामेरा',
+            pt: 'Câmeras ao vivo',
             th: 'กล้องถ่ายทอดสด',
             'zh-Hans': '实时摄像头',
             'zh-Hant': '實時攝像頭'
