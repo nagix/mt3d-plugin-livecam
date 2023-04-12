@@ -45,6 +45,7 @@ class LivecamPlugin {
         me.id = 'livecam';
         me.name = {
             en: 'Live Cameras',
+            fr: 'Caméras en direct',
             ja: 'ライブカメラ',
             ko: '실시간 웹캠',
             ne: 'प्रत्यक्ष क्यामेरा',
