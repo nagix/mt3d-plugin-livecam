@@ -3,7 +3,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import image from '@rollup/plugin-image';
 import json from '@rollup/plugin-json';
-import {terser} from 'rollup-plugin-terser';
+import terser from '@rollup/plugin-terser';
 import postcss from 'rollup-plugin-postcss';
 import inlinesvg from 'postcss-inline-svg';
 import strip from '@rollup/plugin-strip';
@@ -31,7 +31,10 @@ export default [{
 	},
 	external: ['mini-tokyo-3d'],
 	plugins: [
-		resolve(),
+		resolve({
+			browser: true,
+			preferBuiltins: false
+		}),
 		postcss({
 			plugins: [
 				inlinesvg()
@@ -56,11 +59,15 @@ export default [{
 	},
 	external: ['mini-tokyo-3d'],
 	plugins: [
-		resolve(),
+		resolve({
+			browser: true,
+			preferBuiltins: false
+		}),
 		postcss({
 			plugins: [
 				inlinesvg()
-			]
+			],
+			minimize: true
 		}),
 		commonjs(),
 		image(),
@@ -84,7 +91,10 @@ export default [{
 	},
 	external: ['mini-tokyo-3d'],
 	plugins: [
-		resolve(),
+		resolve({
+			browser: true,
+			preferBuiltins: false
+		}),
 		postcss({
 			plugins: [
 				inlinesvg()
