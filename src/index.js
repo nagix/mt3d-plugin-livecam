@@ -5,6 +5,9 @@ import './livecam.css';
 // Live camera URL
 const LIVECAM_URL = 'https://mini-tokyo.appspot.com/livecam';
 
+// Refresh interval (5 minutes)
+const REFRESH_INTERVAL = 300000;
+
 function addColor(url, color) {
     const encodedColor = color.replace('#', '%23');
     return url.replace('%3e', ` fill=\'${encodedColor}\' stroke=\'${encodedColor}\'%3e`);
@@ -61,7 +64,6 @@ class LivecamPlugin {
         me.clockModes = ['realtime'];
         me.viewModes = ['ground'];
         me.cameras = {};
-        me.markers = {};
         me._onSelection = me._onSelection.bind(me);
         me._onDeselection = me._onDeselection.bind(me);
     }
@@ -72,114 +74,143 @@ class LivecamPlugin {
 
     onEnabled() {
         const me = this,
-            {map, cameras} = me;
+            map = me.map;
 
         map.on('selection', me._onSelection);
         map.on('deselection', me._onDeselection);
 
-        fetch(LIVECAM_URL).then(response => response.json()).then(data => {
-            for (const item of data) {
-                cameras[item.id] = item;
+        const repeat = () => {
+            const now = performance.now();
+
+            if (Math.floor(now / REFRESH_INTERVAL) !== Math.floor(me._lastCameraRefresh / REFRESH_INTERVAL)) {
+                fetch(LIVECAM_URL)
+                    .then(response => response.json())
+                    .then(data => me._updateCameras(data));
+                me._lastCameraRefresh = now;
             }
-            me._addMarkers();
-        });
+            me._frameRequestID = requestAnimationFrame(repeat);
+        };
+
+        repeat();
     }
 
     onDisabled() {
         const me = this,
-            {map} = me;
+            {map, panel} = me;
 
         map.off('selection', me._onSelection);
         map.off('deselection', me._onDeselection);
 
-        if (me.panel) {
+        if (panel) {
             map.trackObject();
-            me.panel.remove();
+            panel.remove();
             delete me.panel;
         }
 
-        for (const id of Object.keys(me.cameras)) {
-            delete me.cameras[id];
-        }
-        for (const id of Object.keys(me.markers)) {
-            me.markers[id].remove();
-            delete me.markers[id];
-        }
+        cancelAnimationFrame(me._frameRequestID);
+        delete me._lastCameraRefresh;
+
+        me._updateCameras([]);
     }
 
     onVisibilityChanged(visible) {
-        const me = this;
+        const me = this,
+            {map, panel, cameras} = me;
 
         me.visible = visible;
 
-        if (!visible && me.panel) {
-            me.map.trackObject();
+        if (!visible && panel) {
+            map.trackObject();
         }
-        for (const id of Object.keys(me.markers)) {
-            me.markers[id].setVisibility(visible);
+        for (const id of Object.keys(cameras)) {
+            cameras[id].marker.setVisibility(visible);
         }
     }
 
-    _addMarkers() {
+    _updateCameras(data) {
         const me = this,
-            {map, visible} = me,
-            {lang} = map;
+            {map, cameras, visible} = me,
+            lang = map.lang;
 
-        for (const id of Object.keys(me.cameras)) {
-            const {center, zoom, bearing, pitch, name, thumbnail} = me.cameras[id],
-                element = createElement('div', {className: 'livecam-marker'}),
-                selection = {id, selectionType: 'livecam'};
-            let popup;
+        for (const item of data) {
+            const id = item.id,
+                camera = cameras[id];
 
-            me.markers[id] = new Marker({element})
-                .setLngLat(center)
-                .addTo(map)
-                .setVisibility(visible)
-                .on('click', () => {
-                    map.trackObject(selection);
-                    map.getMapboxMap().flyTo({center, zoom, bearing, pitch});
-                })
-                .on('mouseenter', () => {
-                    popup = new Popup()
-                        .setLngLat(center)
-                        .setHTML([
-                            '<div class="thumbnail-image-container">',
-                            '<div class="ball-pulse"><div></div><div></div><div></div></div>',
-                            `<div class="thumbnail-image" style="background-image: url(\'${thumbnail}\');"></div>`,
-                            '</div>',
-                            `<div><strong>${name[lang]}</strong></div>`
-                        ].join(''))
-                        .addTo(map);
-                })
-                .on('mouseleave', () => {
-                    if (popup) {
-                        popup.remove();
-                        popup = undefined;
-                    }
-                });
+            if (camera) {
+                camera.marker.setLngLat(item.center);
+                camera.updated = true;
+                continue;
+            }
+
+            const element = createElement('div', {className: 'livecam-marker'}),
+                marker = new Marker({element})
+                    .setLngLat(item.center)
+                    .addTo(map)
+                    .setVisibility(visible)
+                    .on('click', () => {
+                        const {center, zoom, bearing, pitch} = cameras[id];
+
+                        map.trackObject({id, selectionType: 'livecam'});
+                        map.getMapboxMap().flyTo({center, zoom, bearing, pitch});
+                    })
+                    .on('mouseenter', () => {
+                        const {center, name, thumbnail} = cameras[id];
+
+                        cameras[id].popup = new Popup()
+                            .setLngLat(center)
+                            .setHTML([
+                                '<div class="thumbnail-image-container">',
+                                '<div class="ball-pulse"><div></div><div></div><div></div></div>',
+                                `<div class="thumbnail-image" style="background-image: url(\'${thumbnail}\');"></div>`,
+                                '</div>',
+                                `<div><strong>${name[lang]}</strong></div>`
+                            ].join(''))
+                            .addTo(map);
+                    })
+                    .on('mouseleave', () => {
+                        if (cameras[id].popup) {
+                            cameras[id].popup.remove();
+                            delete cameras[id].popup;
+                        }
+                    });
+
+            cameras[id] = Object.assign({marker, updated: true}, item);
+        }
+
+        for (const id of Object.keys(cameras)) {
+            if (cameras[id].updated) {
+                delete cameras[id].updated;
+            } else {
+                if (cameras[id].popup) {
+                    cameras[id].popup.remove();
+                }
+                cameras[id].marker.remove();
+                delete cameras[id];
+            }
         }
     }
 
     _onSelection(event) {
         if (event.selectionType === 'livecam') {
             const me = this,
-                {id} = event;
+                camera = me.cameras[event.id];
 
-            me.markers[id].setActivity(true);
-            me.panel = new LivecamPanel({camera: me.cameras[id]}).addTo(me.map);
+            camera.marker.setActivity(true);
+            me.panel = new LivecamPanel({camera}).addTo(me.map);
         }
     }
 
     _onDeselection(event) {
         if (event.selectionType === 'livecam') {
             const me = this,
-                marker = me.markers[event.id];
+                marker = me.cameras[event.id].marker,
+                panel = me.panel;
 
             if (marker) {
                 marker.setActivity(false);
             }
-            if (me.panel) {
-                me.panel.remove();
+            if (panel) {
+                panel.remove();
                 delete me.panel;
             }
         }
