@@ -137,6 +137,7 @@ class LivecamPlugin {
                 camera = cameras[id];
 
             if (camera) {
+                Object.assign(camera, item);
                 camera.marker.setLngLat(item.center);
                 camera.updated = true;
                 continue;
