@@ -204,11 +204,11 @@ class LivecamPlugin {
     _onDeselection(event) {
         if (event.selectionType === 'livecam') {
             const me = this,
-                marker = me.cameras[event.id].marker,
+                camera = me.cameras[event.id],
                 panel = me.panel;
 
-            if (marker) {
-                marker.setActivity(false);
+            if (camera && camera.marker) {
+                camera.marker.setActivity(false);
             }
             if (panel) {
                 panel.remove();
