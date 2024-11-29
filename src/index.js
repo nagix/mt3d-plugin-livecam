@@ -33,7 +33,7 @@ class LivecamPanel extends Panel {
         const me = this,
             {name, html} = me._options.camera;
 
-        me.setTitle(name[map.lang])
+        me.setTitle(name[map.lang] || name.en)
             .setHTML(html);
         return super.addTo(map);
     }
@@ -165,7 +165,7 @@ class LivecamPlugin {
                                 '<div class="ball-pulse"><div></div><div></div><div></div></div>',
                                 `<div class="thumbnail-image" style="background-image: url(\'${thumbnail}\');"></div>`,
                                 '</div>',
-                                `<div><strong>${name[lang]}</strong></div>`
+                                `<div><strong>${name[lang] || name.en}</strong></div>`
                             ].join(''))
                             .addTo(map);
                     })
