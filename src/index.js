@@ -146,7 +146,7 @@ class LivecamPlugin {
             }
 
             const element = createElement('div', {className: 'livecam-marker'}),
-                marker = new Marker({element})
+                marker = new Marker({element, minZoom: 11})
                     .setLngLat(item.center)
                     .addTo(map)
                     .setVisibility(visible)
